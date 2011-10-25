@@ -1,0 +1,15 @@
+name: BananaProtect
+main: de.bananaco.bananaprotect.BananaProtect
+version: 5.0
+load: startup
+commands:
+    superstick:
+        usage: <command> arg
+    setplayer:
+        usage: <command> NAME 0-127
+    requestgroup:
+        usage: <command> 0-127
+    acceptplayer:
+        usage: <command> NAME
+    leavegroup:
+        usage: <command> 0-127
