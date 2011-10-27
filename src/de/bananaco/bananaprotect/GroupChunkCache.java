@@ -36,8 +36,12 @@ public class GroupChunkCache {
 		cache.remove(newChunk);
 	}
 	
-	public void saveAll() {
+	public void saveAll(BananaProtect bp) {
+		if(bp.disabled)
+			return;
 		for(GroupChunk chunk : cache.values()) {
+			if(bp.disabled)
+				return;
 			if(chunk != null)
 			chunk.save();
 			long timeLast = System.currentTimeMillis()-chunk.lastUsed;

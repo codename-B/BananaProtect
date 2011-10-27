@@ -13,3 +13,5 @@ commands:
         usage: <command> NAME
     leavegroup:
         usage: <command> 0-127
+    mygroup:
+        usage: <command>

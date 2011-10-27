@@ -65,7 +65,7 @@ public class GroupChunk {
 	
 	public boolean isProtected(int x, int y, int z) {
 		lastUsed = System.currentTimeMillis();
-		return get(x,y,z)!= null;
+		return get(x,y,z) != null;
 	}
 	
 	public boolean isProtectedFrom(int x, int y, int z, byte id) {

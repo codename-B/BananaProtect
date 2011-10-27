@@ -18,6 +18,10 @@ public class GroupChunkBlocks {
 	}
 	
 	public boolean blockBreak(World world, int x, int y, int z, Player player) {
+		if(player.hasPermission("bananaprotect.admin")) {
+			return onBlockPlace(player, true);
+		}
+		
 		byte id = groups.getGroup(player);
 		int cx = world.getChunkAt(new Location(world, x, y, z)).getX();
 		int cz = world.getChunkAt(new Location(world, x, y, z)).getZ();
@@ -33,6 +37,7 @@ public class GroupChunkBlocks {
 		if(gc.isProtected(x, y, z))
 			if(gc.isProtectedFrom(x, y, z, id))
 				return onBlockPlace(player, false);
+
 		if(id == -1)
 			return onBlockPlace(player, defaultBuild);
 		

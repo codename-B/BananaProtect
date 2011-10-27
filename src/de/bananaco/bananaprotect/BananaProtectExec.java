@@ -123,12 +123,25 @@ public class BananaProtectExec {
 		else if (sender instanceof Player) {
 			Player player = (Player) sender;
 			/*
+			 * This command lets a user see their group.
+			 */
+			if(command.equalsIgnoreCase("mygroup") && isUser(player)) {
+				byte group = groups.getGroup(player);
+				if(group>=0)
+				player.sendMessage(ChatColor.LIGHT_PURPLE+"Your are in group:"+group);
+				else {
+				player.sendMessage(ChatColor.RED+"You do not have a group");
+				player.sendMessage(ChatColor.LIGHT_PURPLE+"To apply for a group use /requestgroup ID");
+				}
+			}
+			
+			/*
 			 * This command allows group leaders to claim unclaimed blocks
 			 * with the superstick
 			 * Usage: /bananastick claim|whoplaced
 			 */
 			if(command.equalsIgnoreCase("superstick")) {
-				if(isSuper(player))
+				if(isSuper(player)) {
 				if(target == null) {
 				bp.getListener().remove(player);
 				player.sendMessage(ChatColor.AQUA+"SuperStick disabled");
@@ -137,6 +150,7 @@ public class BananaProtectExec {
 				SuperStick type = SuperStick.getByName(target);
 				bp.getListener().place(player, type);
 				player.sendMessage(ChatColor.AQUA+"SuperStick enabled - type:"+type.getName());
+				} 
 				}
 				else
 				player.sendMessage(ChatColor.RED+"Nu-uh. You're not a leader.");
@@ -163,6 +177,7 @@ public class BananaProtectExec {
 					Player tp = bp.getPlayer(target, sender);
 					Byte bt = groups.getGroup(player);
 					if (containsRequest(tp, bt)) {
+						groups.setGroup(tp, bt);
 						removeRequest(tp, bt);
 						player.sendMessage(ChatColor.LIGHT_PURPLE
 								+ tp.getName() + " accepted!");
@@ -171,7 +186,7 @@ public class BananaProtectExec {
 								+ "No request from " + tp.getName());
 					}
 				} else {
-					player.sendMessage(ChatColor.RED+"You must be super to do this...");
+					player.sendMessage(ChatColor.RED+"You must be a group leader to do this...");
 				}
 			}
 			/*

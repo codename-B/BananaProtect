@@ -13,6 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.bananaco.bananaprotect.superstick.SuperStickListener;
+import de.bananaco.help.Help;
 
 public class BananaProtect extends JavaPlugin {
 
@@ -22,6 +23,7 @@ public class BananaProtect extends JavaPlugin {
 	private GroupChunkBlocks gcb;
 	private BananaProtectExec bpe;
 	private SuperStickListener ssl;
+	public boolean disabled = false;
 	
 	private Configuration c;
 	private static List<Integer> blackList;
@@ -76,6 +78,7 @@ public class BananaProtect extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		disabled = true;
 		groups.save();
 		
 		groupChunkCache.saveAllUncache();
@@ -88,22 +91,26 @@ public class BananaProtect extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		// Do statics
+		Help.load(this);
+		
 		setupConfig();
 		PluginManager pm = this.getServer().getPluginManager();
 		
 		new ParentPermission("bananaprotect.*", PermissionDefault.OP, "bananaprotect.admin").registerPermission(pm);
 		new ParentPermission("bananaprotect.admin", PermissionDefault.FALSE, "bananaprotect.super").registerPermission(pm);
-		new ParentPermission("bananaprotect.super", PermissionDefault.FALSE, "bananaprotect.user").registerPermission(pm);
+		new ParentPermission("bananaprotect.super", PermissionDefault.FALSE, "bananaprotect.leader").registerPermission(pm);
+		new ParentPermission("bananaprotect.leader", PermissionDefault.FALSE, "bananaprotect.user").registerPermission(pm);
 		new ParentPermission("bananaprotect.user", PermissionDefault.TRUE).registerPermission(pm);
 		
 		bpe = new BananaProtectExec(this, groups);
 		
 		groups.load();
-		
+		final BananaProtect bp = this;
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this,
 				new Runnable() {
 					public void run() {
-						groupChunkCache.saveAll();
+						groupChunkCache.saveAll(bp);
 					}
 				}, 1000, 1000);
 		

@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.painting.PaintingBreakByEntityEvent;
@@ -44,8 +45,35 @@ public class BlockEvent extends BlockListener {
 		if(event.isCancelled())
 			return;
 		
-		boolean cancel = gcb.blockPlace(event.getBlock().getWorld(), event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), event.getPlayer());	
+		boolean cancel = gcb.blockBreak(event.getBlock().getWorld(), event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), event.getPlayer());	
+
 		event.setCancelled(cancel);
+	}
+	
+	@Override
+	public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+		if(event.isCancelled())
+			return;
+		for(Block block : event.getBlocks()) {
+			World world = block.getWorld();
+			int cx = block.getX() >> 4;
+			int cz = block.getZ() >> 4;
+			
+			int x = block.getX() % 16;
+			int y = block.getY();
+			int z = block.getZ() % 16;
+			
+			if(x<0)
+				x=16+x;
+			if(z<0)
+				z=16+z;
+			
+			boolean cancel = gcb.getCache().get(world, cx, cz).isProtected(x, y, z);
+			if(cancel) {
+			event.setCancelled(cancel);
+			return;
+			}
+		}
 	}
 	
 	public void registerEvents(JavaPlugin jp, PluginManager pm) {
@@ -54,6 +82,8 @@ public class BlockEvent extends BlockListener {
 		
 		pm.registerEvent(Event.Type.BLOCK_IGNITE, this, Priority.Normal, jp);
 		pm.registerEvent(Event.Type.BLOCK_BURN, this, Priority.Normal, jp);
+		
+		pm.registerEvent(Event.Type.BLOCK_PISTON_EXTEND, this, Priority.Normal, jp);
 		this.ebe.registerEvents(jp, pm);
 	}
 	
@@ -68,8 +98,6 @@ public class BlockEvent extends BlockListener {
 		int x = event.getBlock().getX() % 16;
 		int y = event.getBlock().getY();
 		int z = event.getBlock().getZ() % 16;
-		
-		
 		
 		if(x<0)
 			x=16+x;
